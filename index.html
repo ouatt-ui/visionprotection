@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Site connecté à Meta (Facebook)</title>
+
+  <meta property="og:title" content="Mon site connecté à Meta" />
+  <meta property="og:description" content="Exemple de site simple connecté à Meta (Facebook) - Pixel, Login et Page Plugin." />
+  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:url" content="https://votre-projet.vercel.app" />
+
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;padding:0;background:#f7f7f7}
+    header{background:#1877f2;color:white;padding:1rem}
+    .container{max-width:900px;margin:2rem auto;background:white;padding:1.25rem;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+    .btn{display:inline-block;padding:0.6rem 1rem;border-radius:6px;background:#4267B2;color:white;text-decoration:none}
+    .small{font-size:0.9rem;color:#666}
+    footer{margin-top:1rem;font-size:0.85rem;color:#666}
+    .card{border:1px solid #eee;padding:1rem;border-radius:6px;margin-bottom:1rem}
+    .row{display:flex;gap:1rem;flex-wrap:wrap}
+  </style>
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/></noscript>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Site connecté à Meta</h1>
+      <p class="small">Exemple : Pixel, bouton Facebook Login et Page Plugin.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="fb-root"></div>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : 'YOUR_APP_ID',
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v16.0'
+        });
+
+        FB.getLoginStatus(function(response) {
+          statusChangeCallback(response);
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+
+      function statusChangeCallback(response) {
+        const el = document.getElementById('login-status');
+        if(response.status === 'connected'){
+          FB.api('/me', {fields: 'name,email'}, function(profile){
+            el.innerHTML = `Connecté en tant que <strong>${profile.name}</strong>`;
+            fbq('track', 'Login');
+          });
+        } else {
+          el.innerHTML = 'Non connecté';
+        }
+      }
+
+      function fbLogin(){
+        FB.login(function(response) {
+          if (response.authResponse) {
+            statusChangeCallback(response);
+          }
+        }, {scope: 'public_profile,email'});
+      }
+    </script>
+
+    <section class="card">
+      <h2>Connexion Facebook</h2>
+      <p id="login-status" class="small">Vérification du statut...</p>
+      <p><a class="btn" href="#" onclick="fbLogin(); return false;">Se connecter avec Facebook</a></p>
+    </section>
+
+    <section class="card">
+      <h2>Votre page Facebook</h2>
+      <div class="fb-page" data-href="https://www.facebook.com/facebook" data-tabs="timeline" data-width="340" data-height="150" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"></div>
+    </section>
+
+    <footer>
+      <p class="small">👉 Déploiement Vercel :<br>
+      1. Créez un projet sur <a href="https://vercel.com" target="_blank">Vercel</a>.<br>
+      2. Importez ce fichier <code>index.html</code> dans un repo GitHub.<br>
+      3. Connectez GitHub à Vercel et déployez.<br>
+      4. Remplacez <code>YOUR_APP_ID</code> et <code>YOUR_PIXEL_ID</code> par vos identifiants.<br>
+      5. Ajoutez l’URL <code>https://votre-projet.vercel.app</code> dans Meta for Developers (redirect URIs).</p>
+    </footer>
+  </main>
+</body>
+</html>
